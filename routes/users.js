@@ -29,8 +29,8 @@ router.post('/new', function (req, res, next) {
             return;
         }
         if (result == '') {
-            const addSql = 'INSERT INTO user(username,password,comId) VALUES(?,?,?)';
-            connection.query(addSql, [data.username, data.password,data.comId], function (err, result) {
+            const addSql = 'INSERT INTO user(username,password,comId,roleId) VALUES(?,?,?,?)';
+            connection.query(addSql, [data.username, data.password,data.comId,data.roleId], function (err, result) {
                 if (err) {
                     console.log('[INSERT ERROR] - ', err.message);
                     res.send({
@@ -83,15 +83,19 @@ router.put('/update',function (req,res,next) {
     var data = req.body ;
     var id = req.query.id.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     console.log(id,data);
-    var modSql = "UPDATE user SET password=?,comId=?,username =? WHERE id = "+id;
-    connection.query(modSql,[data.password,data.comId,data.username],function (err,result) {
+    var modSql = "UPDATE user SET password=?,comId=?,username =?,roleId=? WHERE id = "+id;
+    connection.query(modSql,[data.password,data.comId,data.username,data.roleId],function (err,result) {
         if (err){
             console.log('[UPDATE ERROR] - ',err.message);
+            res.send({
+                status:500,
+                msg:'更新用户信息失败！',
+            })
             return;
         }
         res.send({
             status:200,
-            msg:'success',
+            msg:'更新用户信息成功！',
         })
     })
 });

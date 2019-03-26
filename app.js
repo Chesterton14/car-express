@@ -6,6 +6,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var companyRouter = require('./routes/company');
+var roleRouter = require('./routes/role');
 
 var app = express();
 
@@ -31,5 +32,6 @@ app.use('*',function (req, res, next) {
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/company',companyRouter);
+app.use('/role',roleRouter)
 
 module.exports = app;

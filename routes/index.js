@@ -22,7 +22,7 @@ router.post('/login', function (req, res, next) {
         }
         let userinfo = JSON.stringify(result);
         userinfo = JSON.parse(userinfo);
-        //console.log(userinfo);
+        console.log(userinfo);
 
         if (result == '') {
             res.send({
@@ -30,7 +30,7 @@ router.post('/login', function (req, res, next) {
                 msg: '没有此用户'
             })
         } else if (userinfo[0].password !== data.password) {
-            console.log(userinfo[0].password);
+            //console.log(userinfo[0].password);
             res.send({
                 status: 500,
                 msg: '密码错误'
@@ -39,7 +39,8 @@ router.post('/login', function (req, res, next) {
             /* 定义token */
             const token = jwt.sign({
                 user_id: userinfo[0].id,
-                user_name: userinfo[0].username
+                user_name: userinfo[0].username,
+                userRole:userinfo[0].roleId
             }, singtrue, {expiresIn: 60 * 60});
             res.send({
                 status: 200,
