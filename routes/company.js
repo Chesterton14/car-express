@@ -53,7 +53,7 @@ router.post('/new', function (req, res, next) {
     })
 });
 
-/* 根据公司名查找 */
+/* 根据公司id查找 */
 router.get('/search', function (req, res, next) {
     //var data = req.body;
     //console.log(req.query);
