@@ -101,7 +101,7 @@ router.put('/update', function (req, res, next) {
     })
 });
 
-/*根据公司名删除公司*/
+/*根据公司id删除公司*/
 router.delete('/delete', function (req, res) {
     var comId = req.query.comId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     console.log(comId);
