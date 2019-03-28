@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+
+</head>
+<body>
+<div>
+    <p id="p"></p>
+    <button id="btn">test</button>
+    <button id="btn1">开启</button>
+    <button id="btn2">清除</button>
+</div>
+</body>
+<script src="ws.js"></script>
+<script>
+    websocketServer.url='ws://localhost:8867';
+    document.getElementById('btn').addEventListener('click',function () {
+        console.log(websocketServer.ws);
+    });
+    document.getElementById('btn1').addEventListener('click',function () {
+        websocketServer.createWebSocket();
+
+    });
+    document.getElementById('btn2').addEventListener('click',function () {
+        websocketServer.handClose();
+    })
+</script>
+
+</html>
