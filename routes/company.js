@@ -19,7 +19,7 @@ router.get('/', function (req, res, next) {
 
 /* 新增公司 */
 router.post('/new', function (req, res, next) {
-    var data = req.body;
+    const data = req.body;
     //console.log(data.comName);
     const sql = "SELECT * FROM company WHERE comName='" + data.comName + "'";
     connection.query(sql, function (err, result) {
@@ -57,7 +57,7 @@ router.post('/new', function (req, res, next) {
 router.get('/search', function (req, res, next) {
     //var data = req.body;
     //console.log(req.query);
-    var data = req.query.comId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
+    const data = req.query.comId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
 
     console.log(data);
     const sql = "SELECT * FROM company WHERE comId='" + data + "'";
@@ -84,10 +84,10 @@ router.get('/search', function (req, res, next) {
 
 /* 更新公司信息 */
 router.put('/update', function (req, res, next) {
-    var data = req.body;
-    var comId = req.query.comId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
+    const data = req.body;
+    const comId = req.query.comId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     console.log(data);
-    var modSql = "UPDATE company SET comPhone=?,comAddress=? ,comName =? WHERE comId="+comId;
+    const modSql = "UPDATE company SET comPhone=?,comAddress=? ,comName =? WHERE comId="+comId;
     connection.query(modSql, [data.comPhone, data.comAddress, data.comName], function (err, result) {
         if (err) {
             console.log('[UPDATE ERROR] - ', err.message);
@@ -103,9 +103,9 @@ router.put('/update', function (req, res, next) {
 
 /*根据公司id删除公司*/
 router.delete('/delete', function (req, res) {
-    var comId = req.query.comId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
+    const comId = req.query.comId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     console.log(comId);
-    var sql = "DELETE FROM company WHERE comId="+comId;
+    const sql = "DELETE FROM company WHERE comId="+comId;
     connection.query(sql,  function (err, result) {
         if (err) {
             console.log('[DELETE ERROR] - ', err.message);

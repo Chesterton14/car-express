@@ -17,17 +17,35 @@
 </body>
 <script src="ws.js"></script>
 <script>
-    websocketServer.url='ws://localhost:8867';
-    document.getElementById('btn').addEventListener('click',function () {
+    websocketServer.url = 'ws://localhost:8867';
+    document.getElementById('btn').addEventListener('click', function () {
         console.log(websocketServer.ws);
     });
-    document.getElementById('btn1').addEventListener('click',function () {
+    document.getElementById('btn1').addEventListener('click', function () {
         websocketServer.createWebSocket();
 
     });
-    document.getElementById('btn2').addEventListener('click',function () {
+    document.getElementById('btn2').addEventListener('click', function () {
         websocketServer.handClose();
     })
+    // 打开一个 web socket
+    var ws = new WebSocket("ws://localhost:9998/echo");
+    ws.onopen = function () {
+// Web Socket 已连接上，使用 send() 方法发送数据
+        ws.send("发送数据");
+        alert("数据发送中...");
+    };
+
+    ws.onmessage = function (evt) {
+        var received_msg = evt.data;
+        alert("数据已接收...");
+    };
+
+    ws.onclose = function () {
+        // 关闭 websocket
+        alert("连接已关闭...");
+    };
+
 </script>
 
 </html>

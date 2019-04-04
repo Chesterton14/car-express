@@ -1,11 +1,11 @@
-var express = require('express');
-var router = express.Router();
-var connection = require('../db/DBConfig');
+const express = require('express');
+const router = express.Router();
+const connection = require('../db/DBConfig');
 connection.connect();
+
 /* get all users */
 router.get('/', function (req, res, next) {
-
-    var sql = 'SELECT * FROM user';
+    const sql = 'SELECT * FROM user';
     connection.query(sql, function (err, result) {
         if (err) {
             console.log('[SELECT ERROR]:', err.message);
@@ -20,7 +20,7 @@ router.get('/', function (req, res, next) {
 
 /* new user */
 router.post('/new', function (req, res, next) {
-    var data = req.body;
+    const data = req.body;
     console.log(data);
     const sqlusername = "SELECT * FROM user WHERE username='" + data.username + "'";
     connection.query(sqlusername, function (err, result) {
@@ -55,8 +55,8 @@ router.post('/new', function (req, res, next) {
 
 /* search user by id*/
 router.get('/finduser', function (req, res, next) {
-    var data = req.query.id.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
-    console.log(data);
+    const data = req.query.id.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
+    //console.log(data);
     const sql = "SELECT * FROM user WHERE id='" + data + "'";
     connection.query(sql, function (err, result) {
         if (err) {
@@ -80,10 +80,10 @@ router.get('/finduser', function (req, res, next) {
 
 /* update user */
 router.put('/update',function (req,res,next) {
-    var data = req.body ;
-    var id = req.query.id.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
+    const data = req.body ;
+    const id = req.query.id.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     console.log(id,data);
-    var modSql = "UPDATE user SET password=?,comId=?,username =?,roleId=? WHERE id = "+id;
+    const modSql = "UPDATE user SET password=?,comId=?,username =?,roleId=? WHERE id = "+id;
     connection.query(modSql,[data.password,data.comId,data.username,data.roleId],function (err,result) {
         if (err){
             console.log('[UPDATE ERROR] - ',err.message);
@@ -102,9 +102,9 @@ router.put('/update',function (req,res,next) {
 
 /* delete user */
 router.delete('/delete',function (req,res) {
-    var id = req.query.id.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
+    const id = req.query.id.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     console.log(id);
-    var sql = "DELETE FROM user WHERE id="+id;
+    const sql = "DELETE FROM user WHERE id="+id;
     connection.query(sql,function (err,result) {
         if (err) {
             console.log('[DELETE ERROR] - ', err.message);

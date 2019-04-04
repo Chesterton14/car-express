@@ -12,7 +12,7 @@ router.get('/', function (req, res, next) {
 
 /* login api */
 router.post('/login', function (req, res, next) {
-    var data = req.body;
+    const data = req.body;
     //console.log(data);
     const sql = "SELECT * FROM user WHERE username='" + data.username + "'";
     connection.query(sql, function (err, result) {
