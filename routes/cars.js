@@ -79,6 +79,7 @@ router.get('/points/userCar', function (req, res) {
     const pageSize= req.query.pageSize.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     const sql = "SELECT * FROM cars WHERE userId=" + userId;
     const carSql = "SELECT * FROM points WHERE carId=";
+    const carsSql = "SELECT * FROM cars";
     connection.query(sql, function (err, result) {
         if (err) {
             console.log('查询失败', err.message);
@@ -90,18 +91,35 @@ router.get('/points/userCar', function (req, res) {
         }
         //console.log(result);
         let points = [];
+
         for (let index in result) {
             //console.log("carId="+result[index].carId);
-            connection.query(carSql + result[index].carId, function (err, result) {
+            connection.query(carSql + result[index].carId, function (err, poingtRes) {
                 if (err){
                     res.send({
                         status: 404,
                         msg: '查询失败'
                     });
                     return;
+                }else{
+                    for (let i in poingtRes){
+                        connection.query(carsSql,function (err,res) {
+                            if (err){
+                                res.send({
+                                    status: 404,
+                                    msg: '查询失败'
+                                });
+                                return;
+                            }
+                            for (let j=0;j<res.length;j++){
+                                if (poingtRes[i].carId == res[j].carId) {
+                                    poingtRes[i].label =res[j].label;
+                                }
+                            }
+                        });
+                    }
+                    points.push(poingtRes);
                 }
-                //console.log(result);
-                points.push(result);
             });
         }
         setTimeout(function () {
@@ -124,7 +142,7 @@ router.get('/points/userCar', function (req, res) {
                 dataLength:data.length,
                 data: data
             })
-        },100)
+        },50)
 
 
     })
