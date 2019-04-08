@@ -89,11 +89,8 @@ router.get('/points/userCar', function (req, res) {
             });
             return
         }
-        //console.log(result);
         let points = [];
-
         for (let index in result) {
-            //console.log("carId="+result[index].carId);
             connection.query(carSql + result[index].carId, function (err, poingtRes) {
                 if (err){
                     res.send({
@@ -123,18 +120,13 @@ router.get('/points/userCar', function (req, res) {
             });
         }
         setTimeout(function () {
-            //console.log(result.length);
-            //console.log(steamroller(points).length);
             let totalData =steamroller(points);
             let data=[];
-            //console.log(currentPage);
             if (currentPage>1){
                 data = totalData.slice(pageSize*(currentPage-1),pageSize*currentPage);
-                //console.log(pageSize*(currentPage-1),pageSize*currentPage);
             }else{
                 data = totalData.slice(0,pageSize*currentPage);
             }
-            //console.log(data);
             res.send({
                 status: 200,
                 msg: 'success',

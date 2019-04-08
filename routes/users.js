@@ -1,8 +1,25 @@
 const express = require('express');
 const router = express.Router();
 const connection = require('../db/DBConfig');
-connection.connect();
+//connection.connect();
+function handleDisconnection() {
+    connection.connect(function(err) {
+        if(err) {
+            setTimeout('handleDisconnection()', 2000);
+        }
+    });
 
+    connection.on('error', function(err) {
+        console.log('db error', err);
+        if(err.code === 'PROTOCOL_CONNECTION_LOST') {
+            console.log('db error执行重连:'+err.message);
+            handleDisconnection();
+        } else {
+            throw err;
+        }
+    });
+}
+handleDisconnection();
 /* get all users */
 router.get('/', function (req, res, next) {
     const sql = 'SELECT * FROM user';
