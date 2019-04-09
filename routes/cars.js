@@ -198,10 +198,10 @@ router.put('/update/position', function (req, res) {
 router.delete('/delete', function (req, res) {
     const carId = req.query.carId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     //console.log(req.query);
-    const sql = "DELETE FROM cars WHERE carId=" + carId;
+    const sql = "DELETE  FROM cars WHERE carId=" + carId;
     connection.query(sql, function (err, result) {
         if (err) {
-            console.log('[DELETE ERROR] - ', err.message);
+            console.log('[ ERROR] - ', err.message);
             res.send(404);
             return;
         }
@@ -211,7 +211,22 @@ router.delete('/delete', function (req, res) {
         })
     })
 });
-
+router.get('/car',function (req,res) {
+    const carId = req.query.carId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
+    const sql = "SELECT * FROM cars WHERE carId=" + carId;
+    connection.query(sql, function (err, result) {
+        if (err) {
+            console.log('[ERROR] - ', err.message);
+            res.send(404);
+            return;
+        }
+        res.send({
+            status: 200,
+            data:result,
+            msg: 'success',
+        })
+    })
+})
 module.exports = router;
 
 function steamroller (arr){
