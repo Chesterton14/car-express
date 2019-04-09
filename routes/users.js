@@ -15,7 +15,8 @@ function handleDisconnection() {
             console.log('db error执行重连:'+err.message);
             handleDisconnection();
         } else {
-            throw err;
+            console.log(err);
+            
         }
     });
 }
