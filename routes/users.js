@@ -16,7 +16,7 @@ function handleDisconnection() {
             handleDisconnection();
         } else {
             console.log(err);
-            
+
         }
     });
 }

@@ -54,6 +54,9 @@ const server = net.createServer((socket) => {
             console.log('更新车辆状态为离线');
         });
     });
+    socket.on('error',(err)=>{
+        console.log(err);
+    })
     socket.pipe(socket);
 });
 server.on('error', (err) => {
