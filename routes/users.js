@@ -5,7 +5,7 @@ const connection = require('../db/DBConfig');
 function handleDisconnection() {
     connection.connect(function(err) {
         if(err) {
-            setTimeout('handleDisconnection()', 2000);
+            setTimeout(handleDisconnection(), 2000);
         }
     });
 
