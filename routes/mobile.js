@@ -14,11 +14,19 @@ router.get('/search',function (req,res) {
             });
             return;
         }
-        res.send({
-            status:200,
-            msg:'查询设备成功',
-            data:result
-        })
+        if(result != ''){
+            res.send({
+                status:200,
+                msg:'查询设备成功',
+                data:result
+            })
+        }else{
+            res.send({
+                status:500,
+                msg:'错误'
+            });
+        }
+
     })
 });
 
