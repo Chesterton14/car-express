@@ -7,7 +7,7 @@ router.get('/search',function (req,res) {
     const sql = "SELECT * FROM cars WHERE mobileId=" + mobileId;
     connection.query(sql,function (err,result) {
         if (err){
-            console.log("[SELECT ERR]", err);
+            console.log("[SELECT ERR]", err.sqlMessage);
             res.send({
                 status:500,
                 msg:'错误'
@@ -36,7 +36,7 @@ router.post('/new',function (req,res) {
     const sql = 'INSERT INTO cars(label,isOnline,userId,isMobile,mobileId) VALUES(?,?,?,?,?)';
     connection.query(sql,[data.label,0,data.userId,1,data.mobileId],function (err,result) {
         if (err){
-            console.log("[INSERT ERR]",err);
+            console.log("[INSERT ERR]",err.sqlMessage);
             res.send({
                 status:500,
                 msg:'错误'
@@ -56,7 +56,7 @@ router.post('/data',function (req,res) {
     let time = new Date().format("yyyy-MM-dd hh:mm:ss");
     connection.query(sql,[data.lat,data.lng,data.carId,time],function (err,result) {
         if (err){
-            console.log("[INSERT ERR]",err);
+            console.log("[INSERT ERR]",err.sqlMessage);
             res.send({
                 status:500,
                 msg:'错误'
