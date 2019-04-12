@@ -2,12 +2,14 @@ const net = require('net');
 const connection = require('../db/DBConfig');
 const port = 8868;
 const updateSql = "UPDATE cars SET isOnline=? WHERE carId=";
-const addSql = 'INSERT INTO points(carId,lat,lng,time) VALUES(?,?,?,?)';
+const addSql = 'INSERT INTO points(carId,lat,lng,time,label) VALUES(?,?,?,?,?)';
+const carsSql = "SELECT * FROM cars";
 
 const server = net.createServer((socket) => {
     console.log('new connected');
     socket.write('hello\r\n');
     let carId='';
+    let label='';
     socket.on('data', (data) => {
         let oData = data.toString();
         console.log("接收数据", oData);
@@ -27,13 +29,24 @@ const server = net.createServer((socket) => {
                 }
                 console.log('更新车辆状态为在线');
             });
-            connection.query(addSql, [carId, lat, lng, time], function (err, result) {
+            connection.query(carsSql, function (err, res) {
                 if (err) {
-                    console.log('[INSERT ERROR] - ', err.message);
+                    console.log('[SELECT ERROR] - ', err.message);
                     return;
                 }
-                console.log("更新车辆信息成功");
-            })
+                for(let i in res){
+                    if (res[i].carId == carId){
+                        label=res[i].label;
+                    }
+                }
+                connection.query(addSql, [carId, lat, lng, time,label], function (err, result) {
+                    if (err) {
+                        console.log('[INSERT ERROR] - ', err.message);
+                        return;
+                    }
+                    console.log("更新车辆信息成功");
+                })
+            });
         } else {
             connection.query(updateSql + carId, [0], function (err, result) {
                 if (err) {

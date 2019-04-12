@@ -3,37 +3,50 @@ const sqlconnection = require('../db/DBConfig');
 const addSql = 'INSERT INTO points(carId,lat,lng,time) VALUES(?,?,?,?)';
 const updateSql = "UPDATE cars SET isOnline=? WHERE carId=";
 const port = 8869;
+const carsSql = "SELECT * FROM cars";
 
 const server = ws.createServer(connection => {
     let carId;
+    let label;
     connection.on('text', function (res) {
         let time=new Date().format("yyyy-MM-dd hh:mm:ss");
         console.log('接收消息'+time , res);
 
         let data =JSON.parse(res);
         carId=data.carId
-        sqlconnection.query(addSql,[data.carId,data.latitude,data.longitude,time],function (err,result) {
+        sqlconnection.query(carsSql,function (err,res) {
             if (err){
-                console.log("[INSERT ERR]",err.sqlMessage);
-                let err={
-                    status:500,
-                    msg:'error'
-                };
-                connection.send(JSON.stringify(err))
+                console.log("[SELECT ERROR]" +err.sqlMessage)
             }
-            sqlconnection.query(updateSql + carId, [1], function (err, result) {
-                if (err) {
-                    console.log('[UPDATE ERROR] - ', err.message);
-                    return;
+            for(let i in res){
+                if (res[i].carId == carId){
+                    label=res[i].label;
                 }
-                console.log('更新车辆状态为在线');
-            });
-            let data={
-                status:200,
-                msg:'success'
-            };
-            connection.send(JSON.stringify(data))
+            }
+            sqlconnection.query(addSql,[data.carId,data.latitude,data.longitude,time],function (err,result) {
+                if (err){
+                    console.log("[INSERT ERR]",err.sqlMessage);
+                    let err={
+                        status:500,
+                        msg:'error'
+                    };
+                    connection.send(JSON.stringify(err))
+                }
+                sqlconnection.query(updateSql + carId, [1], function (err, result) {
+                    if (err) {
+                        console.log('[UPDATE ERROR] - ', err.message);
+                        return;
+                    }
+                    console.log('更新车辆状态为在线');
+                });
+                let data={
+                    status:200,
+                    msg:'success'
+                };
+                connection.send(JSON.stringify(data))
+            })
         })
+
     });
     connection.on('connect', function (code) {
         console.log('开启连接', code);

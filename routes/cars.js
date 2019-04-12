@@ -99,22 +99,6 @@ router.get('/points/userCar', function (req, res) {
                     });
                     return;
                 }else{
-                    for (let i in poingtRes){
-                        connection.query(carsSql,function (err,res) {
-                            if (err){
-                                res.send({
-                                    status: 404,
-                                    msg: '查询失败'
-                                });
-                                return;
-                            }
-                            for (let j=0;j<res.length;j++){
-                                if (poingtRes[i].carId == res[j].carId) {
-                                    poingtRes[i].label =res[j].label;
-                                }
-                            }
-                        });
-                    }
                     points.push(poingtRes);
                 }
             });
