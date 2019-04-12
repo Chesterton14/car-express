@@ -1,6 +1,6 @@
 const ws = require('nodejs-websocket');
 const sqlconnection = require('../db/DBConfig');
-const addSql = 'INSERT INTO points(carId,lat,lng,time) VALUES(?,?,?,?)';
+const addSql = 'INSERT INTO points(carId,lat,lng,time,label) VALUES(?,?,?,?,?)';
 const updateSql = "UPDATE cars SET isOnline=? WHERE carId=";
 const port = 8869;
 const carsSql = "SELECT * FROM cars";
@@ -23,7 +23,7 @@ const server = ws.createServer(connection => {
                     label=res[i].label;
                 }
             }
-            sqlconnection.query(addSql,[data.carId,data.latitude,data.longitude,time],function (err,result) {
+            sqlconnection.query(addSql,[data.carId,data.latitude,data.longitude,time,label],function (err,result) {
                 if (err){
                     console.log("[INSERT ERR]",err.sqlMessage);
                     let err={
