@@ -22,7 +22,6 @@ router.post('/login', function (req, res, next) {
         }
         let userinfo = JSON.stringify(result);
         userinfo = JSON.parse(userinfo);
-        console.log(userinfo);
 
         if (result == '') {
             res.send({
@@ -54,27 +53,18 @@ router.post('/login', function (req, res, next) {
 /* 验证登录状态 */
 router.get('/profile', function (req, res, next) {
     const authorization = req.headers.authorization;
+
     if (authorization === '') {
         res.send(401, 'no token detected in http header "Authorization"')
     }
     const token = authorization.split(' ')[1];
-    //console.log(token);
     jwt.verify(token,singtrue,function (err,decoded) {
         if (err){
             console.log(err);
             res.send(401);
         }
-        //console.log(decoded);
         res.send(JSON.stringify(decoded));
     })
-    /*let tokenContent;
-    try {
-        tokenContent = jwt.verify(token, 'chesterton');     //如果token过期或验证失败，将抛出错误
-        console.log(tokenContent);
-        res.send(tokenContent)
-    } catch (err) {
-        res.send(401, 'invalid token');
-    }*/
 });
 
 module.exports = router;

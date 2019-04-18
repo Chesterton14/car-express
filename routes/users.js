@@ -56,7 +56,6 @@ router.post('/new', function (req, res, next) {
 /* search user by id*/
 router.get('/finduser', function (req, res, next) {
     const data = req.query.id.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
-    //console.log(data);
     const sql = "SELECT * FROM user WHERE id='" + data + "'";
     connection.query(sql, function (err, result) {
         if (err) {
@@ -82,7 +81,6 @@ router.get('/finduser', function (req, res, next) {
 router.put('/update',function (req,res,next) {
     const data = req.body ;
     const id = req.query.id.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
-    console.log(id,data);
     const modSql = "UPDATE user SET password=?,comId=?,username =?,roleId=? WHERE id = "+id;
     connection.query(modSql,[data.password,data.comId,data.username,data.roleId],function (err,result) {
         if (err){
@@ -103,7 +101,6 @@ router.put('/update',function (req,res,next) {
 /* delete user */
 router.delete('/delete',function (req,res) {
     const id = req.query.id.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
-    console.log(id);
     const sql = "DELETE FROM user WHERE id="+id;
     connection.query(sql,function (err,result) {
         if (err) {

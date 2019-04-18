@@ -20,7 +20,6 @@ router.get('/', function (req, res, next) {
 /* 新增公司 */
 router.post('/new', function (req, res, next) {
     const data = req.body;
-    //console.log(data.comName);
     const sql = "SELECT * FROM company WHERE comName='" + data.comName + "'";
     connection.query(sql, function (err, result) {
         if (err) {
@@ -55,11 +54,7 @@ router.post('/new', function (req, res, next) {
 
 /* 根据公司id查找 */
 router.get('/search', function (req, res, next) {
-    //var data = req.body;
-    //console.log(req.query);
     const data = req.query.comId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
-
-    console.log(data);
     const sql = "SELECT * FROM company WHERE comId='" + data + "'";
     connection.query(sql, function (err, result) {
         if (err) {
@@ -104,7 +99,6 @@ router.put('/update', function (req, res, next) {
 /*根据公司id删除公司*/
 router.delete('/delete', function (req, res) {
     const comId = req.query.comId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
-    console.log(comId);
     const sql = "DELETE FROM company WHERE comId="+comId;
     connection.query(sql,  function (err, result) {
         if (err) {

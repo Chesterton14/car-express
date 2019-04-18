@@ -144,7 +144,6 @@ router.post('/newCar', function (req, res) {
 router.put('/update', function (req, res) {
     const data = req.body;
     const carId = req.query.carId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
-   //console.log(data);
     const modSql = "UPDATE cars SET label=? WHERE carId=" + carId;
     connection.query(modSql, [data.label], function (err, result) {
         if (err) {
@@ -163,7 +162,6 @@ router.put('/update', function (req, res) {
 router.put('/update/position', function (req, res) {
     const data = req.body;
     const pointId = req.query.pointId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
-    //console.log(data);
     const modSql = "UPDATE points SET position=? WHERE pointId=" + pointId;
     connection.query(modSql, [data.position], function (err, result) {
         if (err) {
@@ -181,7 +179,6 @@ router.put('/update/position', function (req, res) {
 /*delete car by carId*/
 router.delete('/delete', function (req, res) {
     const carId = req.query.carId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
-    //console.log(req.query);
     const sql = "DELETE  FROM cars WHERE carId=" + carId;
     connection.query(sql, function (err, result) {
         if (err) {
