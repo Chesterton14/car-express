@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const connection = require('../db/DBConfig');
-
+const timeSelect = require('../js/timeSelect')
 /*get all cars*/
 router.get('/', function (req, res) {
     const sql = "SELECT * FROM cars";
-    connection.query(sql, function (err, result) {
+    connection(sql, function (err, result) {
         if (err) {
             console.log('[SELECT ERROR]:', err.message);
         }
@@ -21,7 +21,7 @@ router.get('/', function (req, res) {
 router.get('/userCars', function (req, res) {
     const userId = req.query.userId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     const sql = "SELECT * FROM cars WHERE userId=" + userId;
-    connection.query(sql, function (err, result) {
+    connection(sql, function (err, result) {
         if (err) {
             console.log('[SELECT ERROR] - ', err.message);
             res.send(404);
@@ -44,11 +44,44 @@ router.get('/userCars', function (req, res) {
     })
 });
 
+/*search car*/
+router.post('/search', function (req, res) {
+    const data = req.body
+    //console.log(data);
+    const sql = "SELECT * FROM points WHERE carId=" + data.carId;
+    connection(sql, function (err, result) {
+        if (err) {
+            console.log('[SELECT ERROR] - ', err.message);
+            res.send(404);
+            return;
+        }
+        let points = JSON.stringify(result)
+        points = JSON.parse(points)
+        let selectData = timeSelect(points, data.startTime, data.endTime)
+        //console.log(selectData);
+        if (selectData != ''){
+            res.send({
+                status: 200,
+                msg: '查找车辆成功！',
+                total: selectData.length,
+                data: selectData
+            })
+        }else{
+            res.send({
+                status: 500,
+                msg: '无此车辆数据！'
+            })
+        }
+
+
+    })
+})
+
 /*get points*/
 router.get('/points', function (req, res) {
     const carId = req.query.carId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     const sql = "SELECT * FROM points WHERE carId=" + carId;
-    connection.query(sql, function (err, result) {
+    connection(sql, function (err, result) {
         if (err) {
             console.log('[SELECT ERROR] - ', err.message);
             res.send(404);
@@ -59,6 +92,7 @@ router.get('/points', function (req, res) {
                 status: 500,
                 msg: '无此车辆数据！'
             })
+            return
         } else {
             res.send({
                 status: 200,
@@ -76,11 +110,12 @@ router.get('/points', function (req, res) {
 router.get('/points/userCar', function (req, res) {
     const userId = req.query.userId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     const currentPage = req.query.currentPage.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
-    const pageSize= req.query.pageSize.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
+    const pageSize = req.query.pageSize.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     const sql = "SELECT * FROM cars WHERE userId=" + userId;
     const carSql = "SELECT * FROM points WHERE carId=";
     const carsSql = "SELECT * FROM cars";
-    connection.query(sql, function (err, result) {
+    let error=false
+    connection(sql, function (err, result) {
         if (err) {
             console.log('查询失败', err.message);
             res.send({
@@ -90,44 +125,53 @@ router.get('/points/userCar', function (req, res) {
             return
         }
         let points = [];
-        for (let index in result) {
-            connection.query(carSql + result[index].carId, function (err, poingtRes) {
-                if (err){
-                    res.send({
-                        status: 404,
-                        msg: '查询失败'
-                    });
-                    return;
-                }else{
-                    points.push(poingtRes);
-                }
+        result = JSON.stringify(result);
+        result= JSON.parse(result)
+        for (let i=0;i<result.length;i++) {
+            connection(carSql + result[i].carId, function (err, poingtRes) {
+                if (err) {
+                    //console.log('查询失败', err.message);
+                    error=true
+                    return
+                };
+                points.push(poingtRes);
             });
         }
         setTimeout(function () {
-            let totalData =steamroller(points);
-            let data=[];
-            if (currentPage>1){
-                data = totalData.slice(pageSize*(currentPage-1),pageSize*currentPage);
-            }else{
-                data = totalData.slice(0,pageSize*currentPage);
+            if (error===true){
+                res.send({
+                    status: 500,
+                    msg: 'error',
+                })
+                return
+            }
+            error=false
+            let totalData = steamroller(points);
+            let data = [];
+            if (currentPage > 1) {
+                data = totalData.slice(pageSize * (currentPage - 1), pageSize * currentPage);
+            } else {
+                data = totalData.slice(0, pageSize * currentPage);
             }
             res.send({
                 status: 200,
                 msg: 'success',
-                total:steamroller(points).length,
-                dataLength:data.length,
+                total: steamroller(points).length,
+                dataLength: data.length,
                 data: data
             })
-        },50)
+        }, 50)
 
 
     })
 });
+
+
 /*new car*/
 router.post('/newCar', function (req, res) {
     const data = req.body;
     const sql = 'INSERT INTO cars(label,isOnline,userId,username) VALUES(?,?,?,?)';
-    connection.query(sql, [data.label, 0, data.userId, data.username], function (err, result) {
+    connection(sql, [data.label, 0, data.userId, data.username], function (err, result) {
         if (err) {
             console.log('[UPDATE ERROR] - ', err.message);
             res.send(404);
@@ -145,7 +189,7 @@ router.put('/update', function (req, res) {
     const data = req.body;
     const carId = req.query.carId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     const modSql = "UPDATE cars SET label=? WHERE carId=" + carId;
-    connection.query(modSql, [data.label], function (err, result) {
+    connection(modSql, [data.label], function (err, result) {
         if (err) {
             console.log('[UPDATE ERROR] - ', err.message);
             res.send(404);
@@ -163,7 +207,7 @@ router.put('/update/position', function (req, res) {
     const data = req.body;
     const pointId = req.query.pointId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     const modSql = "UPDATE points SET position=? WHERE pointId=" + pointId;
-    connection.query(modSql, [data.position], function (err, result) {
+    connection(modSql, [data.position], function (err, result) {
         if (err) {
             console.log('[UPDATE ERROR] - ', err.message);
             res.send(404);
@@ -180,7 +224,7 @@ router.put('/update/position', function (req, res) {
 router.delete('/delete', function (req, res) {
     const carId = req.query.carId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     const sql = "DELETE  FROM cars WHERE carId=" + carId;
-    connection.query(sql, function (err, result) {
+    connection(sql, function (err, result) {
         if (err) {
             console.log('[ ERROR] - ', err.message);
             res.send(404);
@@ -192,10 +236,12 @@ router.delete('/delete', function (req, res) {
         })
     })
 });
-router.get('/car',function (req,res) {
+
+/*get car by carId*/
+router.get('/car', function (req, res) {
     const carId = req.query.carId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     const sql = "SELECT * FROM cars WHERE carId=" + carId;
-    connection.query(sql, function (err, result) {
+    connection(sql, function (err, result) {
         if (err) {
             console.log('[ERROR] - ', err.message);
             res.send(404);
@@ -203,23 +249,24 @@ router.get('/car',function (req,res) {
         }
         res.send({
             status: 200,
-            data:result,
+            data: result,
             msg: 'success',
         })
     })
 })
+
 module.exports = router;
 
-function steamroller (arr){
+function steamroller(arr) {
     // 1.创建一个新数组，保存扁平后的数据
-    let newArr=[];
+    let newArr = [];
     // 2.for循环原数组
-    for(let i=0;i<arr.length;i++){
-        if(Array.isArray(arr[i])){
+    for (let i = 0; i < arr.length; i++) {
+        if (Array.isArray(arr[i])) {
             // 如果是数组，调用steamroller 将其扁平化
             // 然后在push 到newArr中
-            newArr.push.apply(newArr,steamroller(arr[i]))
-        }else {
+            newArr.push.apply(newArr, steamroller(arr[i]))
+        } else {
             // 反之 不是数组，直接push进newArr
             newArr.push(arr[i])
         }

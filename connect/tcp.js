@@ -22,14 +22,14 @@ const server = net.createServer((socket) => {
             carId = oData.split('$')[1].split(',')[0];
             let lat = oData.split('$')[1].split(',')[1];
             let lng = oData.split('$')[1].split(',')[2];
-            connection.query(updateSql + carId, [1], function (err, result) {
+            connection(updateSql + carId, [1], function (err, result) {
                 if (err) {
                     console.log('[UPDATE ERROR] - ', err.message);
                     return;
                 }
                 console.log('更新车辆状态为在线');
             });
-            connection.query(carsSql, function (err, res) {
+            connection(carsSql, function (err, res) {
                 if (err) {
                     console.log('[SELECT ERROR] - ', err.message);
                     return;
@@ -39,7 +39,7 @@ const server = net.createServer((socket) => {
                         label=res[i].label;
                     }
                 }
-                connection.query(addSql, [carId, lat, lng, time,label], function (err, result) {
+                connection(addSql, [carId, lat, lng, time,label], function (err, result) {
                     if (err) {
                         console.log('[INSERT ERROR] - ', err.message);
                         return;
@@ -48,7 +48,7 @@ const server = net.createServer((socket) => {
                 })
             });
         } else {
-            connection.query(updateSql + carId, [0], function (err, result) {
+            connection(updateSql + carId, [0], function (err, result) {
                 if (err) {
                     console.log('[UPDATE ERROR] - ', err.message);
                     return;
@@ -59,7 +59,7 @@ const server = net.createServer((socket) => {
     });
     socket.on('end', () => {
         console.log('disconnected');
-        connection.query(updateSql + carId, [0], function (err, result) {
+        connection(updateSql + carId, [0], function (err, result) {
             if (err) {
                 console.log('[UPDATE ERROR] - ', err.message);
                 return;

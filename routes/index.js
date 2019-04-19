@@ -15,7 +15,7 @@ router.post('/login', function (req, res, next) {
     const data = req.body;
     //console.log(data);
     const sql = "SELECT * FROM user WHERE username='" + data.username + "'";
-    connection.query(sql, function (err, result) {
+    connection(sql, function (err, result) {
         if (err) {
             console.log('[SELECT ERROR] - ', err.message);
             return;

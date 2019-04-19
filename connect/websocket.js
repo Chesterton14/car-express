@@ -10,7 +10,7 @@ const server = ws.createServer(connection => {
         if (res === 'ping'){
             console.log('心跳');
         }else{
-            sqlconnection.query(sql+carId,function (err,result) {
+            sqlconnection(sql+carId,function (err,result) {
                 if (err){
                     console.log("查询错误");
                     let err ={

@@ -6,7 +6,7 @@ const connection = require('../db/DBConfig');
 /*get all roles*/
 router.get('/',function (req,res) {
     const sql = 'SELECT * FROM role';
-    connection.query(sql, function (err, result) {
+    connection(sql, function (err, result) {
         if (err) {
             console.log('[SELECT ERROR]:', err.message);
         }
@@ -23,7 +23,7 @@ router.get('/search',function (req,res) {
     const roleId = req.query.roleId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     console.log(roleId);
     const sql = "SELECT * FROM role WHERE roleId='" + roleId + "'";
-    connection.query(sql, function (err, result) {
+    connection(sql, function (err, result) {
         if (err) {
             console.log('[SELECT ERROR] - ', err.message);
             return;

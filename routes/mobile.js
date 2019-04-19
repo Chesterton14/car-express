@@ -5,7 +5,7 @@ const connection = require('../db/DBConfig');
 router.get('/search',function (req,res) {
     const mobileId = req.query.mobileId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     const sql = "SELECT * FROM cars WHERE mobileId=" + mobileId;
-    connection.query(sql,function (err,result) {
+    connection(sql,function (err,result) {
         if (err){
             console.log("[SELECT ERR]", err.sqlMessage);
             res.send({
@@ -34,7 +34,7 @@ router.post('/new',function (req,res) {
     const data = req.body;
     console.log(data);
     const sql = 'INSERT INTO cars(label,isOnline,userId,isMobile,mobileId) VALUES(?,?,?,?,?)';
-    connection.query(sql,[data.label,0,data.userId,1,data.mobileId],function (err,result) {
+    connection(sql,[data.label,0,data.userId,1,data.mobileId],function (err,result) {
         if (err){
             console.log("[INSERT ERR]",err.sqlMessage);
             res.send({
@@ -54,7 +54,7 @@ router.post('/data',function (req,res) {
     const data = req.body;
     const sql='INSERT INTO points(lat,lng,carId,time) VALUES(?,?,?,?)';
     let time = new Date().format("yyyy-MM-dd hh:mm:ss");
-    connection.query(sql,[data.lat,data.lng,data.carId,time],function (err,result) {
+    connection(sql,[data.lat,data.lng,data.carId,time],function (err,result) {
         if (err){
             console.log("[INSERT ERR]",err.sqlMessage);
             res.send({

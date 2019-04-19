@@ -15,7 +15,7 @@ const server = ws.createServer(connection => {
 
         let data =JSON.parse(res);
         carId=data.carId
-        sqlconnection.query(carsSql,function (err,res) {
+        sqlconnection(carsSql,function (err,res) {
             if (err){
                 console.log("[SELECT ERROR]" ,err.sqlMessage)
             }
@@ -24,7 +24,7 @@ const server = ws.createServer(connection => {
                     label=res[i].label;
                 }
             }
-            sqlconnection.query(addSql,[data.carId,data.latitude,data.longitude,time,label,unixtime,data.ag,data.speed],function (err,result) {
+            sqlconnection(addSql,[data.carId,data.latitude,data.longitude,time,label,unixtime,data.ag,data.speed],function (err,result) {
                 if (err){
                     console.log("[INSERT ERR]",err.sqlMessage);
                     let err={
@@ -33,7 +33,7 @@ const server = ws.createServer(connection => {
                     };
                     connection.send(JSON.stringify(err))
                 }
-                sqlconnection.query(updateSql + carId, [1], function (err, result) {
+                sqlconnection(updateSql + carId, [1], function (err, result) {
                     if (err) {
                         console.log('[UPDATE ERROR] - ', err.message);
                         return;
@@ -55,7 +55,7 @@ const server = ws.createServer(connection => {
     });
     connection.on('close', function (code) {
         console.log('关闭连接', code);
-        sqlconnection.query(updateSql + carId, [0], function (err, result) {
+        sqlconnection(updateSql + carId, [0], function (err, result) {
             if (err) {
                 console.log('[UPDATE ERROR] - ', err.message);
                 return;

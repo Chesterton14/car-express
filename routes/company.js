@@ -5,7 +5,7 @@ const connection = require('../db/DBConfig');
 /* get all company */
 router.get('/', function (req, res, next) {
     const sql = "SELECT * FROM company";
-    connection.query(sql, function (err, result) {
+    connection(sql, function (err, result) {
         if (err) {
             console.log('[SELECT ERROR]:', err.message);
         }
@@ -21,7 +21,7 @@ router.get('/', function (req, res, next) {
 router.post('/new', function (req, res, next) {
     const data = req.body;
     const sql = "SELECT * FROM company WHERE comName='" + data.comName + "'";
-    connection.query(sql, function (err, result) {
+    connection(sql, function (err, result) {
         if (err) {
             console.log('[SELECT ERROR] - ', err.message);
             res.send(404);
@@ -29,7 +29,7 @@ router.post('/new', function (req, res, next) {
         }
         if (result == '') {
             const addSql = 'INSERT INTO company(comName,comPhone,comAddress) VALUES(?,?,?)';
-            connection.query(addSql, [data.comName, data.comPhone, data.comAddress], function (err, result) {
+            connection(addSql, [data.comName, data.comPhone, data.comAddress], function (err, result) {
                 if (err) {
                     console.log('[INSERT ERROR] - ', err.message);
                     res.send({
@@ -56,7 +56,7 @@ router.post('/new', function (req, res, next) {
 router.get('/search', function (req, res, next) {
     const data = req.query.comId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     const sql = "SELECT * FROM company WHERE comId='" + data + "'";
-    connection.query(sql, function (err, result) {
+    connection(sql, function (err, result) {
         if (err) {
             console.log('[SELECT ERROR] - ', err.message);
             res.send(404)
@@ -83,7 +83,7 @@ router.put('/update', function (req, res, next) {
     const comId = req.query.comId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     console.log(data);
     const modSql = "UPDATE company SET comPhone=?,comAddress=? ,comName =? WHERE comId="+comId;
-    connection.query(modSql, [data.comPhone, data.comAddress, data.comName], function (err, result) {
+    connection(modSql, [data.comPhone, data.comAddress, data.comName], function (err, result) {
         if (err) {
             console.log('[UPDATE ERROR] - ', err.message);
             res.send(404);
@@ -100,7 +100,7 @@ router.put('/update', function (req, res, next) {
 router.delete('/delete', function (req, res) {
     const comId = req.query.comId.replace(/[\'\"\\\/\b\f\n\r\t]/g, '');
     const sql = "DELETE FROM company WHERE comId="+comId;
-    connection.query(sql,  function (err, result) {
+    connection(sql,  function (err, result) {
         if (err) {
             console.log('[DELETE ERROR] - ', err.message);
             res.send(404);
