@@ -160,7 +160,7 @@ router.get('/points/userCar', function (req, res) {
                 dataLength: data.length,
                 data: data
             })
-        }, 50)
+        }, 300)
 
 
     })

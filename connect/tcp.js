@@ -15,13 +15,14 @@ const server = net.createServer((socket) => {
         console.log("接收数据", oData);
         /*数据格式*/
         /*tcp$carId,lat,lng*/
-        let sign = oData.split('$')[0];
+        /*tcp*id$GNGGA*/
+        let sign = oData.split('*')[0];
         let time = new Date().format("yyyy-MM-dd hh:mm:ss");
         //console.log(sign, "carId:" + carId, "lat:" + lat, "lng:" + lng);
         if (sign === 'tcp') {
-            carId = oData.split('$')[1].split(',')[0];
-            let lat = oData.split('$')[1].split(',')[1];
-            let lng = oData.split('$')[1].split(',')[2];
+            carId = oData.split('*')[1].split('$')[0];
+            let lat = insert_flg(oData.split(',')[2],'.',2)
+            let lng = insert_flg(oData.split(',')[4],'.',3)
             connection(updateSql + carId, [1], function (err, result) {
                 if (err) {
                     console.log('[UPDATE ERROR] - ', err.message);
@@ -78,6 +79,12 @@ server.on('error', (err) => {
 server.listen(port, () => {
     console.log('Server start on port:' + port);
 });
+function insert_flg(str, flg, sn) {
+    str = str.replace('.', '')
+    str1 = str.substring(0, sn)
+    str2 = str.substring(sn, str.length)
+    return str1 + '.' + str2
+}
 
 Date.prototype.format = function (fmt) {
     let o = {
