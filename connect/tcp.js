@@ -1,4 +1,5 @@
 const net = require('net');
+const http = require('http');
 const connection = require('../db/DBConfig');
 const port = 8868;
 const updateSql = "UPDATE cars SET isOnline=? WHERE carId=";
@@ -12,50 +13,81 @@ const server = net.createServer((socket) => {
     let label='';
     socket.on('data', (data) => {
         let oData = data.toString();
-        console.log("接收数据", oData);
+        let time = new Date().format("yyyy-MM-dd hh:mm:ss");
+        console.log("接收数据"+time, oData);
         /*数据格式*/
-        /*tcp$carId,lat,lng*/
         /*tcp*id$GNGGA*/
         let sign = oData.split('*')[0];
-        let time = new Date().format("yyyy-MM-dd hh:mm:ss");
-        //console.log(sign, "carId:" + carId, "lat:" + lat, "lng:" + lng);
-        if (sign === 'tcp') {
+        if (sign === 'tcp' ) {
+            let ggaSign=oData.split('$')[1].split(',')[0];
+            if (ggaSign !== 'GNGGA') {
+                console.log('不是GNGGA，过滤');
+                return
+            }
             carId = oData.split('*')[1].split('$')[0];
-            let lat = insert_flg(oData.split(',')[2],'.',2)
-            let lng = insert_flg(oData.split(',')[4],'.',3)
-            connection(updateSql + carId, [1], function (err, result) {
-                if (err) {
-                    console.log('[UPDATE ERROR] - ', err.message);
+            let lat = insert_flg(oData.split(',')[2],'.',2);
+            let lng = insert_flg(oData.split(',')[4],'.',3);
+            lat =translate(lat);
+            lng = translate(lng);
+            http.get('http://api.map.baidu.com/geoconv/v1/?coords='+lng+','+lat+'&from=1&to=5&ak=pzo9c3uMCP19ERmYH0yuyLQTaYxNcdTK', (res) => {
+                const { statusCode } = res;
+                const contentType = res.headers['content-type'];
+                let error;
+                if (statusCode !== 200) {
+                    error = new Error('请求失败\n' + `状态码: ${statusCode}`);
+                } else if (!/^application\/json/.test(contentType)) {
+                    error = new Error('无效的 content-type.\n' + `期望的是 application/json 但接收到的是 ${contentType}`);
+                }
+                if (error) {
+                    console.error(error.message);
+                    // 消费响应数据来释放内存。
+                    res.resume();
                     return;
                 }
-                console.log('更新车辆状态为在线');
-            });
-            connection(carsSql, function (err, res) {
-                if (err) {
-                    console.log('[SELECT ERROR] - ', err.message);
-                    return;
-                }
-                for(let i in res){
-                    if (res[i].carId == carId){
-                        label=res[i].label;
+                res.setEncoding('utf8');
+                let rawData = '';
+                res.on('data', (chunk) => { rawData += chunk; });
+                res.on('end', () => {
+                    try {
+                        const parsedData = JSON.parse(rawData);
+                        console.log(parsedData);
+                        let bd_lng = parsedData.result[0].x;
+                        let bd_lat = parsedData.result[0].y;
+                        connection(updateSql + carId, [1], function (err, result) {
+                            if (err) {
+                                console.log('[UPDATE ERROR] - ', err.message);
+                                return;
+                            }
+                            console.log('更新车辆状态为在线');
+                        });
+                        connection(carsSql, function (err, res) {
+                            if (err) {
+                                console.log('[SELECT ERROR] - ', err.message);
+                                return;
+                            }
+                            for(let i in res){
+                                if (res[i].carId == carId){
+                                    label=res[i].label;
+                                }
+                            }
+                            connection(addSql, [carId, bd_lat, bd_lng, time,label], function (err, result) {
+                                if (err) {
+                                    console.log('[INSERT ERROR] - ', err.message);
+                                    return;
+                                }
+                                console.log("更新车辆信息成功");
+                            })
+                        });
+                    } catch (e) {
+                        console.error(e.message);
                     }
-                }
-                connection(addSql, [carId, lat, lng, time,label], function (err, result) {
-                    if (err) {
-                        console.log('[INSERT ERROR] - ', err.message);
-                        return;
-                    }
-                    console.log("更新车辆信息成功");
-                })
+                });
+            }).on('error', (e) => {
+                console.error(`出现错误: ${e.message}`);
             });
+
         } else {
-            connection(updateSql + carId, [0], function (err, result) {
-                if (err) {
-                    console.log('[UPDATE ERROR] - ', err.message);
-                    return;
-                }
-                console.log('更新车辆状态为离线');
-            });
+            console.log('不是TCP，过滤');
         }
     });
     socket.on('end', () => {
@@ -71,7 +103,7 @@ const server = net.createServer((socket) => {
     socket.on('error',(err)=>{
         console.log(err);
     })
-    socket.pipe(socket);
+    //socket.pipe(socket);
 });
 server.on('error', (err) => {
     console.log(err);
@@ -80,12 +112,16 @@ server.listen(port, () => {
     console.log('Server start on port:' + port);
 });
 function insert_flg(str, flg, sn) {
-    str = str.replace('.', '')
-    str1 = str.substring(0, sn)
-    str2 = str.substring(sn, str.length)
+    str = str.replace('.', '');
+    str1 = str.substring(0, sn);
+    str2 = str.substring(sn, str.length);
     return str1 + '.' + str2
 }
-
+function translate(num) {
+    let a=num.split('.')[0];
+    let b=Math.floor(num.split('.')[1] / 60);
+    return (`${a}.${b}`);
+}
 Date.prototype.format = function (fmt) {
     let o = {
         "M+": this.getMonth() + 1,                 //月份
