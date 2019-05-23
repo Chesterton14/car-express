@@ -16,6 +16,7 @@
     "jsonwebtoken": "^8.5.1",
     "morgan": "~1.9.0",
     "mysql": "^2.16.0",
-    "nodejs-websocket": "^1.7.2"
+    "nodejs-websocket": "^1.7.2",
+    "svg-captcha": "^1.4.0"
   }
 }

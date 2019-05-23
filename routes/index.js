@@ -2,9 +2,15 @@ const express = require('express');
 const router = express.Router();
 const connection = require('../db/DBConfig');
 const jwt = require('jsonwebtoken');
-
+const svgCaptcha = require('svg-captcha');
+const codeConfig = {
+    size: 4,// 验证码长度
+    ignoreChars: '0o1i', // 验证码字符中排除 0o1i
+    height: 44,
+    color: true,
+}
 const singtrue = 'Chesterton';
-
+let vertifyCode ='';
 /* GET home page. */
 router.get('/', function (req, res, next) {
     res.send(JSON.stringify("test"))
@@ -13,7 +19,7 @@ router.get('/', function (req, res, next) {
 /* login api */
 router.post('/login', function (req, res, next) {
     const data = req.body;
-    //console.log(data);
+    console.log(data);
     const sql = "SELECT * FROM user WHERE username='" + data.username + "'";
     connection(sql, function (err, result) {
         if (err) {
@@ -22,7 +28,14 @@ router.post('/login', function (req, res, next) {
         }
         let userinfo = JSON.stringify(result);
         userinfo = JSON.parse(userinfo);
-
+        console.log(data.vertifycode !== vertifyCode);
+        if (data.vertifycode !== vertifyCode) {
+            res.send({
+                status: 500,
+                msg: '验证码错误'
+            })
+            return ;
+        }
         if (result == '') {
             res.send({
                 status: 500,
@@ -36,11 +49,15 @@ router.post('/login', function (req, res, next) {
             })
         } else {
             /* 定义token */
-            const token = jwt.sign({
+            const token = jwt.sign(
+                {
                 user_id: userinfo[0].id,
                 user_name: userinfo[0].username,
                 userRole:userinfo[0].roleId
-            }, singtrue, {expiresIn: 60 * 60});
+            },
+                singtrue,
+                {expiresIn: 60 * 60}
+                );
             res.send({
                 status: 200,
                 msg: '登录成功，欢迎进入',
@@ -66,5 +83,11 @@ router.get('/profile', function (req, res, next) {
         res.send(JSON.stringify(decoded));
     })
 });
-
+/*获取验证码*/
+router.get('/getCode',function (req,res) {
+    const  captcha = svgCaptcha.create(codeConfig);
+    vertifyCode = captcha.text.toLowerCase();
+    res.type('svg');
+    res.send(captcha.data)
+})
 module.exports = router;
