@@ -29,7 +29,8 @@ router.post('/login', function (req, res, next) {
         let userinfo = JSON.stringify(result);
         userinfo = JSON.parse(userinfo);
         console.log(data.vertifycode !== vertifyCode);
-        if (data.vertifycode !== vertifyCode) {
+
+        if (!data.isMobile && data.vertifycode !== vertifyCode) {
             res.send({
                 status: 500,
                 msg: '验证码错误'
