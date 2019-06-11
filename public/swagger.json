@@ -3,10 +3,7 @@
   "info": {
     "description": "车联网监控平台的API接口文档",
     "version": "1.0.0",
-    "title": "车联网监控平台-接口",
-    "contact": {
-      "email": "1326288580@qq.com"
-    }
+    "title": "车联网监控平台-接口"
   },
   "host": "localhost:4000",
   "basePath": "/",
@@ -14,12 +11,212 @@
     {
       "name": "user",
       "description": "用户相关"
+    },
+    {
+      "name": "car",
+      "description": "车辆相关"
     }
   ],
   "schemes": [
     "http"
   ],
   "paths": {
+    "/cars": {
+      "get": {
+        "tags": [
+          "car"
+        ],
+        "summary": "获取所有车辆列表",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/cars/usercars": {
+      "get": {
+        "tags": [
+          "car"
+        ],
+        "summary": "获取用户车辆列表",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户id",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/cars/search": {
+      "post": {
+        "tags": [
+          "car"
+        ],
+        "summary": "根据车辆id和时间段查询车辆数据",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "carId": {
+                  "type": "string"
+                },
+                "startTime": {
+                  "type": "string"
+                },
+                "endTime": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/cars/points": {
+      "get": {
+        "tags": [
+          "car"
+        ],
+        "summary": "根据车辆id查询车辆数据",
+        "parameters": [
+          {
+            "name": "carId",
+            "in": "query",
+            "description": "车辆id",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/cars/points/userCar": {
+      "get": {
+        "tags": [
+          "car"
+        ],
+        "summary": "查询用户下所有车辆数据（分页）",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户id",
+            "type": "string"
+          },
+          {
+            "name": "currentPage",
+            "in": "query",
+            "description": "当前页",
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "每页显示数量",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/cars/newCar": {
+      "post": {
+        "tags": [
+          "car"
+        ],
+        "summary": "新增车辆",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "username",
+                "userId",
+                "label"
+              ],
+              "properties": {
+                "username": {
+                  "type": "string"
+                },
+                "userId": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/cars/update": {
+      "put": {
+        "tags": [
+          "car"
+        ],
+        "summary": "更新车辆信息",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "carId",
+                "label"
+              ],
+              "properties": {
+                "carId": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/users/new": {
       "post": {
         "tags": [
