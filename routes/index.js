@@ -16,7 +16,6 @@ router.get('/', function (req, res, next) {
     res.send(JSON.stringify("test"))
 });
 
-/* login api */
 router.post('/login', function (req, res, next) {
     const data = req.body;
     console.log(data);
@@ -39,13 +38,13 @@ router.post('/login', function (req, res, next) {
         }
         if (result == '') {
             res.send({
-                status: 500,
+                status: 501,
                 msg: '没有此用户'
             })
         } else if (userinfo[0].password !== data.password) {
             //console.log(userinfo[0].password);
             res.send({
-                status: 500,
+                status: 502,
                 msg: '密码错误'
             })
         } else {
