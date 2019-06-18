@@ -49,15 +49,12 @@ router.post('/login', function (req, res, next) {
             })
         } else {
             /* 定义token */
-            const token = jwt.sign(
-                {
+            const token = jwt.sign({
                 user_id: userinfo[0].id,
                 user_name: userinfo[0].username,
                 userRole:userinfo[0].roleId
-            },
-                singtrue,
-                {expiresIn: 60 * 60}
-                );
+            }, singtrue, {expiresIn: 60 * 60});
+
             res.send({
                 status: 200,
                 msg: '登录成功，欢迎进入',
