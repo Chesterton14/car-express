@@ -5,10 +5,11 @@ const port = 8867;
 
 const server = ws.createServer(connection => {
     connection.on('text', function (res) {
-        console.log('接收消息'+ new Date().format("yyyy-MM-dd hh:mm:ss"), res);
+        console.log('接收消息'+ new Date().format("yyyy-MM-dd hh:mm:ss"), JSON.stringify(res));
         let carId = res.split('=')[1];
         if (res === 'ping'){
             console.log('心跳');
+            connection.send('pong');
         }else{
             sqlconnection(sql+carId,function (err,result) {
                 if (err){
