@@ -3,15 +3,6 @@ var createHandler = require('github-webhook-handler')
 var handler = createHandler({ path: '/', secret: 'demo' })
 // 上面的 secret 保持和 GitHub 后台设置的一致
 
-function run_cmd(cmd, args, callback) {
-    var spawn = require('child_process').spawn;
-    var child = spawn(cmd, args);
-    var resp = "";
-
-    child.stdout.on('data', function(buffer) { resp += buffer.toString(); });
-    child.stdout.on('end', function() { callback (resp) });
-}
-
 http.createServer(function (req, res) {
     handler(req, res, function (err) {
         res.statusCode = 404
@@ -29,3 +20,12 @@ handler.on('push', function (event) {
         event.payload.ref);
     run_cmd('sh', ['./autoBuild.sh'], function(text){ console.log(text) });
 })
+
+function run_cmd(cmd, args, callback) {
+    var spawn = require('child_process').spawn;
+    var child = spawn(cmd, args);
+    var resp = "";
+
+    child.stdout.on('data', function(buffer) { resp += buffer.toString(); });
+    child.stdout.on('end', function() { callback (resp) });
+}
