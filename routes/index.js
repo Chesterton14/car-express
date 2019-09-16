@@ -12,11 +12,13 @@ const codeConfig = {
 }
 const singtrue = 'Chesterton';
 let vertifyCode ='';
+
 /* GET home page. */
 router.get('/', function (req, res, next) {
     res.send(JSON.stringify("test"))
 });
 
+/* 登录验证 */
 router.post('/login', function (req, res, next) {
     const data = req.body;
     console.log(data);
@@ -65,6 +67,7 @@ router.post('/login', function (req, res, next) {
         }
     })
 });
+
 /* 验证登录状态 */
 router.get('/profile', function (req, res, next) {
     const authorization = req.headers.authorization;
@@ -81,6 +84,7 @@ router.get('/profile', function (req, res, next) {
         res.send(JSON.stringify(decoded));
     })
 });
+
 /*获取验证码*/
 router.get('/getCode',function (req,res) {
     const  captcha = svgCaptcha.create(codeConfig);
@@ -88,4 +92,5 @@ router.get('/getCode',function (req,res) {
     res.type('svg');
     res.send(captcha.data)
 })
+
 module.exports = router;
