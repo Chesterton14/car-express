@@ -4,7 +4,7 @@ const connection = require('../db/DBConfig');
 const jwt = require('jsonwebtoken');
 const svgCaptcha = require('svg-captcha');
 const codeConfig = {
-    size: 4,// 验证码长度
+    size: 5,// 验证码长度
     ignoreChars: '0o1i', // 验证码字符中排除 0o1i
     height: 44,
     noise: 3,
