@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const connection = require('../db/DBConfig')
-
+ 
 router.get('/part',function(req,res){
     const sql = 'SELECT * FROM trainNote_part'
     connection(sql, function (err, result) {
