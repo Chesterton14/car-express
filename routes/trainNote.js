@@ -15,3 +15,5 @@ router.get('/part',function(req,res){
         });
     });
 })
+
+module.exports = router;
