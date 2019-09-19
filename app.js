@@ -10,6 +10,7 @@ const companyRouter = require('./routes/company');
 const roleRouter = require('./routes/role');
 const carRouter = require('./routes/cars');
 const mobileRouter = require('./routes/mobile');
+const trainNoteRouter = require('./routes/trainNote')
 
 const app = express();
 
@@ -27,5 +28,6 @@ app.use('/company',companyRouter);
 app.use('/role',roleRouter);
 app.use('/cars',carRouter);
 app.use('/mobile',mobileRouter);
+app.use('/trainNote',trainNoteRouter);
 
 module.exports = app;
