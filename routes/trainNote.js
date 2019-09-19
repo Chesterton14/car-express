@@ -3,7 +3,7 @@ const router = express.Router()
 const connection = require('../db/DBConfig')
 
 router.get('/part',function(req,res){
-    const sql = 'SELECT * FROM trainNote-part'
+    const sql = 'SELECT * FROM trainNote_part'
     connection(sql, function (err, result) {
         if (err) {
             console.log('[SELECT ERROR]:', err.message);
